@@ -35,25 +35,28 @@ CLanguage::CLanguage(const std::wstring sID, const int iWordListID)
 	std::wstring sLine;
 	while (std::getline(ssWordList, sLine))
 	{
-		m_aWordList.insert(sLine.substr(0, sLine.find(' ')));
+		m_aWordList.insert(std::pair<std::wstring, int>(sLine.substr(0, sLine.find(' ')), std::stoi(sLine.substr(sLine.find(' '), std::string::npos)) / 100));
 	}
 }
 
-bool CLanguage::HasWord(const std::wstring& sWord)
+int CLanguage::GetWordScore(const std::wstring& sWord) const
 {
-	return m_aWordList.find(sWord) != m_aWordList.end();
+	if(m_aWordList.find(sWord) == m_aWordList.end())
+		return 0;
+
+	return m_aWordList.at(sWord);
 }
 
-std::wstring CLanguage::GetID()
+std::wstring CLanguage::GetID() const
 {
 	return m_sID;
 }
 
 CLanguageDetector::CLanguageDetector()
 {
+	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"en", LANGUAGE_DETECTOR_WORDLIST_EN)));
 	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"da", LANGUAGE_DETECTOR_WORDLIST_DA)));
 	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"de", LANGUAGE_DETECTOR_WORDLIST_DE)));
-	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"en", LANGUAGE_DETECTOR_WORDLIST_EN)));
 	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"es", LANGUAGE_DETECTOR_WORDLIST_ES)));
 	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"fr", LANGUAGE_DETECTOR_WORDLIST_FR)));
 	m_aLanguages.push_back(std::move(std::make_unique<CLanguage>(L"it", LANGUAGE_DETECTOR_WORDLIST_IT)));
@@ -113,16 +116,30 @@ CLanguageScoreTracker::CLanguageScoreTracker(CLanguage& oLanguage)
 
 void CLanguageScoreTracker::ProcessWord(const std::wstring& sWord)
 {
-	if (m_oLanguage.HasWord(sWord))
-		++m_iScore;
+	m_iScore += m_oLanguage.GetWordScore(sWord);
 }
 
-int CLanguageScoreTracker::GetScore()
+long CLanguageScoreTracker::GetScore() const
 {
 	return m_iScore;
 }
 
-std::wstring CLanguageScoreTracker::GetLanguageCode()
+std::wstring CLanguageScoreTracker::GetLanguageCode() const
 {
 	return m_oLanguage.GetID();
 }
+
+/*CWordInfo::CWordInfo(const std::wstring sWord, const int iScore)
+	: m_sWord(sWord), m_iScore(iScore)
+{
+}
+
+std::wstring CWordInfo::GetWord() const
+{
+	return m_sWord;
+}
+
+int CWordInfo::GetScore() const
+{
+	return m_iScore;
+}*/

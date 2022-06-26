@@ -1,20 +1,33 @@
 #pragma once
 
 #include <string>
-#include <set>
+#include <map>
 #include <vector>
 #include <memory>
+
+/*class CWordInfo
+{
+public:
+	CWordInfo(const std::wstring sWord, const int iScore);
+
+	std::wstring GetWord() const;
+	int GetScore() const;
+
+private:
+	std::wstring m_sWord;
+	int m_iScore;
+};*/
 
 class CLanguage
 {
 public:
 	CLanguage(const std::wstring sID, const int iWordListID);
 
-	bool HasWord(const std::wstring& sWord);
-	std::wstring GetID();
+	int GetWordScore(const std::wstring& sWord) const;
+	std::wstring GetID() const;
 
 private:
-	std::set<std::wstring> m_aWordList;
+	std::map<std::wstring, int> m_aWordList;
 	std::wstring m_sID;
 };
 
@@ -24,12 +37,12 @@ public:
 	CLanguageScoreTracker(CLanguage& oLanguage);
 
 	void ProcessWord(const std::wstring& sWord);
-	int GetScore();
-	std::wstring GetLanguageCode();
+	long GetScore() const;
+	std::wstring GetLanguageCode() const;
 
 private:
 	CLanguage& m_oLanguage;
-	int m_iScore;
+	long m_iScore;
 };
 
 class CLanguageDetector
