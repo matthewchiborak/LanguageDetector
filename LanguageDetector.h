@@ -5,29 +5,16 @@
 #include <vector>
 #include <memory>
 
-/*class CWordInfo
-{
-public:
-	CWordInfo(const std::wstring sWord, const int iScore);
-
-	std::wstring GetWord() const;
-	int GetScore() const;
-
-private:
-	std::wstring m_sWord;
-	int m_iScore;
-};*/
-
 class CLanguage
 {
 public:
 	CLanguage(const std::wstring sID, const int iWordListID);
 
-	int GetWordScore(const std::wstring& sWord) const;
+	double GetWordScore(const std::wstring& sWord) const;
 	std::wstring GetID() const;
 
 private:
-	std::map<std::wstring, int> m_aWordList;
+	std::map<std::wstring, double> m_aWordList;
 	std::wstring m_sID;
 };
 
@@ -37,12 +24,12 @@ public:
 	CLanguageScoreTracker(CLanguage& oLanguage);
 
 	void ProcessWord(const std::wstring& sWord);
-	long GetScore() const;
+	double GetScore() const;
 	std::wstring GetLanguageCode() const;
 
 private:
 	CLanguage& m_oLanguage;
-	long m_iScore;
+	double m_iScore;
 };
 
 class CLanguageDetector

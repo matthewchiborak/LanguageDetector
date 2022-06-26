@@ -33,13 +33,16 @@ CLanguage::CLanguage(const std::wstring sID, const int iWordListID)
 
 	std::wstringstream ssWordList(sWordList);
 	std::wstring sLine;
+	std::getline(ssWordList, sLine);
+	double totalScore = std::stod(sLine.substr(sLine.find(' '), std::string::npos));
+
 	while (std::getline(ssWordList, sLine))
 	{
-		m_aWordList.insert(std::pair<std::wstring, int>(sLine.substr(0, sLine.find(' ')), std::stoi(sLine.substr(sLine.find(' '), std::string::npos)) / 100));
+		m_aWordList.insert(std::pair<std::wstring, double>(sLine.substr(0, sLine.find(' ')), std::stod(sLine.substr(sLine.find(' '), std::string::npos)) / totalScore));
 	}
 }
 
-int CLanguage::GetWordScore(const std::wstring& sWord) const
+double CLanguage::GetWordScore(const std::wstring& sWord) const
 {
 	if(m_aWordList.find(sWord) == m_aWordList.end())
 		return 0;
@@ -103,9 +106,6 @@ std::wstring CLanguageDetector::DetectLanguage(const std::wstring& sText)
 		std::wcout << aTrackers[i]->GetLanguageCode() << L": " << aTrackers[i]->GetScore() << std::endl;
 	}
 
-	if (aTrackers[iCurrentMax]->GetScore() < 5)
-		return L"Unknown";
-
 	return aTrackers[iCurrentMax]->GetLanguageCode();
 }
 
@@ -119,7 +119,7 @@ void CLanguageScoreTracker::ProcessWord(const std::wstring& sWord)
 	m_iScore += m_oLanguage.GetWordScore(sWord);
 }
 
-long CLanguageScoreTracker::GetScore() const
+double CLanguageScoreTracker::GetScore() const
 {
 	return m_iScore;
 }
@@ -128,18 +128,3 @@ std::wstring CLanguageScoreTracker::GetLanguageCode() const
 {
 	return m_oLanguage.GetID();
 }
-
-/*CWordInfo::CWordInfo(const std::wstring sWord, const int iScore)
-	: m_sWord(sWord), m_iScore(iScore)
-{
-}
-
-std::wstring CWordInfo::GetWord() const
-{
-	return m_sWord;
-}
-
-int CWordInfo::GetScore() const
-{
-	return m_iScore;
-}*/
